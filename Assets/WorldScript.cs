@@ -3,6 +3,7 @@ using System.Collections;
 
 public class WorldScript : MonoBehaviour {
 
+    static int dropletsPerFrame;
 	// Use this for initialization
     Object droplet;
     System.Random random = new System.Random();
@@ -13,6 +14,7 @@ public class WorldScript : MonoBehaviour {
 
 
 	void Start () {
+        dropletsPerFrame = 4;
         droplet = Resources.Load("DropletPrefab");
         GameObject floor = GameObject.Find("Floor");
         scale = (int)floor.transform.localScale.x;
@@ -23,7 +25,6 @@ public class WorldScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        int dropletsPerFrame = 4;
         for (int i = 0; i < dropletsPerFrame; i++)
         {
             GameObject newthingy = Instantiate(droplet, new Vector3(0, 15, 0), new Quaternion()) as GameObject;
@@ -32,7 +33,13 @@ public class WorldScript : MonoBehaviour {
             float max = scale;
             float clamped = withDecimals % max;
 
-            newthingy.transform.position = new Vector2(clamped - leftPos, 20);
+            newthingy.transform.position = new Vector2(clamped - leftPos, 25);
         }
 	}
+
+    public static void GameOver()
+    {
+        dropletsPerFrame = 20;
+    }
+
 }
