@@ -30,8 +30,13 @@ public class MoveController : MonoBehaviour {
        }
 	}
 
-    void OnCollisionEnter2D()
+    void OnCollisionEnter2D(Collision2D collision)
     {
+        if(collision.collider.name == "DropletPrefab(Clone)")
+        {
+            Debug.Log("you died");
+            Destroy(gameObject);
+        }
         Debug.Log("enter");
         isOnGround = true;
     }
