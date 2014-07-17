@@ -36,7 +36,9 @@ public class Droplet : MonoBehaviour {
                 gameOver();
             } else
             {
-                Player.umbrellaUses -= 1; 
+                Player.umbrellaUses -= 1;
+                GameObject newSplash = Instantiate(splash) as GameObject;
+                newSplash.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + 1, gameObject.transform.position.z); 
             }
            
         }
