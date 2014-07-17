@@ -34,7 +34,6 @@ public class Droplet : MonoBehaviour {
         }
         else if (other.name == "Floor")
         {
-            
             GameObject newSplash = Instantiate(splash) as GameObject;
             newSplash.transform.position = gameObject.transform.position;  
         }
