@@ -3,7 +3,7 @@ using System.Collections;
 
 public class WorldScript : MonoBehaviour {
 
-    static int dropletsPerFrame;
+    static int dropletsPerSecond;
 	// Use this for initialization
     Object droplet;
     System.Random random = new System.Random();
@@ -16,7 +16,7 @@ public class WorldScript : MonoBehaviour {
 
 
 	void Start () {
-        dropletsPerFrame = 2;
+        dropletsPerSecond = 120;
         droplet = Resources.Load("DropletPrefab");
         umbrellaPrefab = Resources.Load("umbrella");
         GameObject floor = GameObject.Find("Floor");
@@ -25,12 +25,26 @@ public class WorldScript : MonoBehaviour {
         leftPos = scale / 2;
         rightPos = scale / 2;
 	}
-	
-	// Update is called once per frame
+
+    float dropletsFraction = 0;
 	void Update () {
-        for (int i = 0; i < dropletsPerFrame; i++)
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.LoadLevel(0);
+
+        dropletsFraction += Time.deltaTime * dropletsPerSecond;
+
+
+        int droplets = (int)dropletsFraction; 
+
+        if(droplets > 0)
         {
-            GameObject newthingy = Instantiate(droplet, new Vector3(0, 15, 0), new Quaternion()) as GameObject;
+            dropletsFraction -= droplets;
+        }
+
+        for (int i = 0; i < droplets; i++)
+        {
+            GameObject newthingy = Instantiate(droplet, new Vector3(0, 20, 0), new Quaternion()) as GameObject;
             int rnd = random.Next();
             float withDecimals = rnd / 100.0f;
             float max = scale;
@@ -49,7 +63,7 @@ public class WorldScript : MonoBehaviour {
 
     public static void GameOver()
     {
-        dropletsPerFrame = 20;
+        //dropletsPerFrame = 20;
     }
 
 }

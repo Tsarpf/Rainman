@@ -36,7 +36,9 @@ public class Droplet : MonoBehaviour {
                 gameOver();
             } else
             {
-                Player.umbrellaUses -= 1;
+                //Why was this like this?
+                //Player.umbrellaUses -= 1;
+                Player.umbrellaUses--;
                 GameObject newSplash = Instantiate(splash) as GameObject;
                 newSplash.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + 1, gameObject.transform.position.z); 
             }
@@ -44,8 +46,8 @@ public class Droplet : MonoBehaviour {
         }
         else if (other.name == "Floor")
         {
-            GameObject newSplash = Instantiate(splash) as GameObject;
-            newSplash.transform.position = gameObject.transform.position;  
+            //GameObject newSplash = Instantiate(splash) as GameObject;
+            //newSplash.transform.position = gameObject.transform.position;  
         }
 
 
@@ -55,10 +57,10 @@ public class Droplet : MonoBehaviour {
     void gameOver()
     {
         
-        Object box = Resources.Load("TextBox");
-        WorldScript.GameOver();
-        GameObject tryAgainBox = Instantiate(box) as GameObject;
-        tryAgainBox.transform.position = new Vector3(0.5F, 0, 0);
+        //Object box = Resources.Load("TextBox");
+        //WorldScript.GameOver();
+        //GameObject tryAgainBox = Instantiate(box) as GameObject;
+        //tryAgainBox.transform.position = new Vector3(0.5F, 0, 0);
 
     }
 
