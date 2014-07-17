@@ -1,17 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 using Assets;
 
 public class Droplet : MonoBehaviour {
 
     float fullSize = 0.75F;
     float steps;
-    Object splash;
+    static UnityEngine.Object splash;
     
     // Use this for initialization
 	void Start () {
         steps = 0.0F;
-        splash = Resources.Load("SplashPrefab");
+        if(splash == null)
+            splash = Resources.Load("SplashPrefab");
 	}
 	
 	// Update is called once per frame
@@ -23,33 +26,15 @@ public class Droplet : MonoBehaviour {
         gameObject.transform.localScale = new Vector3(steps, steps, 1);
 	}
 
-
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.name == "DropletPrefab(Clone)")
             return;
-        else if(other.name == "Player")
-        {
-            if (Player.umbrellaUses < 1)
-            {
-                Destroy(other.gameObject);
-                gameOver();
-            } else
-            {
-                //Why was this like this?
-                //Player.umbrellaUses -= 1;
-                Player.umbrellaUses--;
-                GameObject newSplash = Instantiate(splash) as GameObject;
-                newSplash.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + 1, gameObject.transform.position.z); 
-            }
-           
-        }
-        else if (other.name == "Floor")
-        {
-            //GameObject newSplash = Instantiate(splash) as GameObject;
-            //newSplash.transform.position = gameObject.transform.position;  
-        }
 
+        if(MoveController.playerParts.Contains(other.name))
+        {
+            Destroy(GameObject.Find("Player"));
+        }
 
         Destroy(gameObject);
     }
