@@ -11,11 +11,14 @@ public class WorldScript : MonoBehaviour {
     public float leftPos;
     public float rightPos;
     public int scale;
+    GameObject umbrella;
+    Object umbrellaPrefab;
 
 
 	void Start () {
-        dropletsPerFrame = 4;
+        dropletsPerFrame = 2;
         droplet = Resources.Load("DropletPrefab");
+        umbrellaPrefab = Resources.Load("umbrella");
         GameObject floor = GameObject.Find("Floor");
         scale = (int)floor.transform.localScale.x;
 
@@ -33,7 +36,14 @@ public class WorldScript : MonoBehaviour {
             float max = scale;
             float clamped = withDecimals % max;
 
-            newthingy.transform.position = new Vector2(clamped - leftPos, 25);
+            newthingy.transform.position = new Vector2(clamped - leftPos, 22);
+        }
+        int r = random.Next(100);
+
+        if (umbrella == null && r > 98)
+        {
+            umbrella = Instantiate(umbrellaPrefab) as GameObject;
+            umbrella.transform.position = new Vector3(0,0,0);
         }
 	}
 
