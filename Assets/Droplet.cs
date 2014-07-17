@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets;
 
 public class Droplet : MonoBehaviour {
 
@@ -29,8 +30,15 @@ public class Droplet : MonoBehaviour {
             return;
         else if(other.name == "Player")
         {
-            Destroy(other.gameObject);
-            gameOver();
+            if (Player.umbrellaUses < 1)
+            {
+                Destroy(other.gameObject);
+                gameOver();
+            } else
+            {
+                Player.umbrellaUses -= 1; 
+            }
+           
         }
         else if (other.name == "Floor")
         {
