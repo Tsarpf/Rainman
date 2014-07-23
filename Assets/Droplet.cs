@@ -31,10 +31,10 @@ public class Droplet : MonoBehaviour {
         if (other.name == "DropletPrefab(Clone)")
             return;
 
-        if(MoveController.playerParts.Contains(other.name))
-        {
-            Destroy(GameObject.Find("Player"));
-        }
+        //if(MoveController.parts.Contains(other.name))
+        //{
+        //    Destroy(GameObject.Find("Player"));
+        //}
 
         Destroy(gameObject);
     }

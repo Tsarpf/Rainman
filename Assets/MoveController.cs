@@ -6,13 +6,15 @@ public class MoveController : MonoBehaviour {
 
     Texture2D boxTexture;
     GUIStyle style = new GUIStyle();
-    public static List<string> playerParts;
-	void Start () {
-        playerParts = new List<string>();
-        foreach (Transform child in transform)
+    static public Dictionary<string, GameObject> parts;
+    void Start()
+    {
+        parts = new Dictionary<string, GameObject>();
+	    foreach(Transform part in transform)
         {
-            playerParts.Add(child.name);
+            parts[part.name] = part.gameObject;
         }
+
         boxTexture = new Texture2D(1, 1);	
         for(int y = 0; y < boxTexture.height; y++)
         {
@@ -31,12 +33,17 @@ public class MoveController : MonoBehaviour {
     bool jump = false;
     void getInput()
     {
+        jump = false;
+        goLeft = false;
+        goRight = false;
 
         if (!Input.GetMouseButton(0))
             return;
 
         float x = Input.mousePosition.x;
         float y = Input.mousePosition.y;
+
+
 
         //jump
         if(y < 400 && y > 100)
@@ -61,31 +68,97 @@ public class MoveController : MonoBehaviour {
 
     bool isOnGround = false;
     int playerSpeed = 10;
-	void Update () {
+
+    void Update()
+    {
         getInput();
+    }
+	void FixedUpdate () {
+
+        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+        gameObject.rigidbody2D.velocity = new Vector3(0, gameObject.rigidbody2D.velocity.y, 0);
 
         if(jump && isOnGround)
             gameObject.rigidbody2D.velocity = new Vector2(gameObject.rigidbody2D.velocity.x, playerSpeed);
 
-        if(goLeft)
+        if (goLeft)
+        {
             gameObject.rigidbody2D.velocity = new Vector2(-playerSpeed, gameObject.rigidbody2D.velocity.y);
-        else if(goRight)
+            leftWalkAnimate();
+        }
+        else if (goRight)
+        {
             gameObject.rigidbody2D.velocity = new Vector2(playerSpeed, gameObject.rigidbody2D.velocity.y);
+            rightWalkAnimate();
+        }
         else
+        {
+            float dist = Mathf.Abs((walkTotalProgress % Mathf.PI) - Mathf.PI / 2.0f);
+            if((dist + walkStep) < Mathf.PI / 2.0f)
+            {
+                walkTotalProgress -= walkStep;
+            }
+            else if((dist - walkStep) > Mathf.PI / 2.0f)
+            {
+                walkTotalProgress += walkStep;
+            }
+
+            animateLegs();
+            animateHands();
+
             gameObject.rigidbody2D.velocity = new Vector2(0, gameObject.rigidbody2D.velocity.y);
+            Debug.Log("PYSY PAIKALLA HUORA");
+        }
 
-        jump = false;
-        goLeft = false;
-        goRight = false;
+        //jump = false;
+        //goLeft = false;
+        //goRight = false;
 
 
-        transform.rotation = new Quaternion();
+
+        //transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
 	}
+
+    static float walkTotalProgress = 0f;
+    const float walkStep = 0.1f;
+    
+    
+    void leftWalkAnimate()
+    {
+        walkTotalProgress-=walkStep;
+        Debug.Log("progress: " + walkTotalProgress + " sin'd: " + Mathf.Sin(walkTotalProgress));
+        transform.localEulerAngles = new Vector3(0, 180, 0);
+        animateHands();
+        animateLegs();
+    }
+    void rightWalkAnimate()
+    {
+        walkTotalProgress+=walkStep;
+        transform.localEulerAngles = new Vector3(0, 0, 0);
+        animateHands();
+        animateLegs();
+    }
+
+    void animateLegs()
+    {
+        parts["leftLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 45);
+        parts["rightLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * -45);
+        //parts["leftLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 90);
+        //parts["rightLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * -90);
+    }
+
+    void animateHands()
+    {
+        parts["leftArm"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 45);
+        parts["rightArm"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * -45);
+        //parts["leftArm"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 90);
+        //parts["rightArm"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * -90);
+    }
+
 
 
     void OnGUI()
     {
-
         int totalWidth = 300;
         int xOffset = Screen.width / 2 - totalWidth / 2;
         //Jump
@@ -100,18 +173,20 @@ public class MoveController : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        //if(collision.collider.name == "DropletPrefab(Clone)")
-        //{
-        //    Debug.Log("you died");
-        //    Destroy(gameObject);
-        //}
-        //Debug.Log("enter");
         isOnGround = true;
+    }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        if(collider.name == "DropletPrefab(Clone)")
+        {
+            Destroy(gameObject); 
+        }
     }
 
     void OnCollisionExit2D()
     {
-        Debug.Log("exit");
+        Debug.Log("spam");
         isOnGround = false;
     }
 

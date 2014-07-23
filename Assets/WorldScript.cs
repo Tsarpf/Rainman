@@ -16,9 +16,9 @@ public class WorldScript : MonoBehaviour {
 
 
 	void Start () {
-        dropletsPerSecond = 30;
+        dropletsPerSecond = 15;
         droplet = Resources.Load("DropletPrefab");
-        umbrellaPrefab = Resources.Load("umbrella");
+        //umbrellaPrefab = Resources.Load("umbrella");
         GameObject floor = GameObject.Find("Rotated Floor");
         scale = (int)floor.transform.localScale.x;
 
@@ -52,13 +52,13 @@ public class WorldScript : MonoBehaviour {
 
             newthingy.transform.position = new Vector2(clamped - leftPos, 22);
         }
-        int r = random.Next(100);
+        //int r = random.Next(100);
 
-        if (umbrella == null && r > 98)
-        {
-            umbrella = Instantiate(umbrellaPrefab) as GameObject;
-            umbrella.transform.position = new Vector3(0,0,0);
-        }
+        //if (umbrella == null && r > 98)
+        //{
+        //    //umbrella = Instantiate(umbrellaPrefab) as GameObject;
+        //    //umbrella.transform.position = new Vector3(0,0,0);
+        //}
 	}
 
     public static void GameOver()
