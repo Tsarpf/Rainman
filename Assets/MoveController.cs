@@ -7,6 +7,8 @@ public class MoveController : MonoBehaviour {
     Texture2D boxTexture;
     GUIStyle style = new GUIStyle();
     static public Dictionary<string, GameObject> parts;
+
+    float left, right, top, controlCount, individualControlWidth, individualControlHeight;
     void Start()
     {
         parts = new Dictionary<string, GameObject>();
@@ -25,6 +27,12 @@ public class MoveController : MonoBehaviour {
         }
 
         style.normal.background = boxTexture;
+
+        left = Screen.width / 3.0f;
+    	right = Screen.width * (2.0f / 3.0f);
+    	controlCount = 3;
+    	individualControlWidth = (right - left) / controlCount;
+    	individualControlHeight = Screen.height / 10;
 	}
 
 
@@ -43,10 +51,10 @@ public class MoveController : MonoBehaviour {
         float x = Input.mousePosition.x;
         float y = Input.mousePosition.y;
 
-
+        float controlTop = individualControlHeight * 3;
 
         //jump
-        if(y < 400 && y > 100)
+        if(y < controlTop && y > individualControlHeight)
         {
             jump = true;
         }
@@ -54,41 +62,62 @@ public class MoveController : MonoBehaviour {
         int totalWidth = 300;
         int xOffset = Screen.width / 2 - totalWidth / 2;
         //reft
-        if(x < 100 + xOffset && y < 400)
+        //if(x < 100 + xOffset && y < 400)
+        if(x < left + individualControlWidth && y < controlTop)
         {
             goLeft = true;
         }
 
         //light
-        else if(x > 200 + xOffset && y < 400)
+        else if(x > right - individualControlWidth && y < controlTop)
         {
             goRight = true;
         }
     }
-
+    void OnGUI()
+    {
+        //Jump
+        GUI.color = Color.blue;
+    //left, top, width, height
+        GUI.Box(new Rect(left, Screen.height - individualControlHeight * 2, individualControlWidth * 3, individualControlHeight), "This is a title", style);
+        //Left
+        GUI.color = Color.red;
+    //left, top, width, height
+        GUI.Box(new Rect(left, Screen.height - individualControlHeight, individualControlWidth, individualControlHeight * 2), "This is a title", style);
+        //Right
+        GUI.color = Color.green;
+    //left, top, width, height
+        GUI.Box(new Rect(left + individualControlWidth * 2, Screen.height - individualControlHeight, individualControlWidth, individualControlHeight * 2), "This is a title", style);
+    }
     bool isOnGround = false;
-    int playerSpeed = 10;
+    //int playerSpeed = 10;
 
     void Update()
     {
         getInput();
     }
+    Vector2 playerSpeed = new Vector2(10, 10);
 	void FixedUpdate () {
 
         transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
         gameObject.rigidbody2D.velocity = new Vector3(0, gameObject.rigidbody2D.velocity.y, 0);
 
-        if(jump && isOnGround)
-            gameObject.rigidbody2D.velocity = new Vector2(gameObject.rigidbody2D.velocity.x, playerSpeed);
+        //float deltaTime = Time.deltaTime;
+
+        if (jump && isOnGround)
+        {
+            //gameObject.rigidbody2D.velocity = new Vector2(gameObject.rigidbody2D.velocity.x, playerSpeed.y);
+        }
+
 
         if (goLeft)
         {
-            gameObject.rigidbody2D.velocity = new Vector2(-playerSpeed, gameObject.rigidbody2D.velocity.y);
+            transform.position = new Vector2(transform.position.x - playerSpeed.x * Time.deltaTime, transform.position.y);
             leftWalkAnimate();
         }
         else if (goRight)
         {
-            gameObject.rigidbody2D.velocity = new Vector2(playerSpeed, gameObject.rigidbody2D.velocity.y);
+            transform.position = new Vector2(transform.position.x + playerSpeed.x * Time.deltaTime, transform.position.y);
             rightWalkAnimate();
         }
         else
@@ -106,8 +135,7 @@ public class MoveController : MonoBehaviour {
             animateLegs();
             animateHands();
 
-            gameObject.rigidbody2D.velocity = new Vector2(0, gameObject.rigidbody2D.velocity.y);
-            Debug.Log("PYSY PAIKALLA HUORA");
+            //gameObject.rigidbody2D.velocity = new Vector2(0, gameObject.rigidbody2D.velocity.y);
         }
 
         //jump = false;
@@ -118,15 +146,12 @@ public class MoveController : MonoBehaviour {
 
         //transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
 	}
-
     static float walkTotalProgress = 0f;
     const float walkStep = 0.1f;
-    
-    
     void leftWalkAnimate()
     {
         walkTotalProgress-=walkStep;
-        Debug.Log("progress: " + walkTotalProgress + " sin'd: " + Mathf.Sin(walkTotalProgress));
+        //Debug.Log("progress: " + walkTotalProgress + " sin'd: " + Mathf.Sin(walkTotalProgress));
         transform.localEulerAngles = new Vector3(0, 180, 0);
         animateHands();
         animateLegs();
@@ -138,7 +163,6 @@ public class MoveController : MonoBehaviour {
         animateHands();
         animateLegs();
     }
-
     void animateLegs()
     {
         parts["leftLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 45);
@@ -146,29 +170,12 @@ public class MoveController : MonoBehaviour {
         //parts["leftLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 90);
         //parts["rightLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * -90);
     }
-
     void animateHands()
     {
         parts["leftArm"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 45);
         parts["rightArm"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * -45);
         //parts["leftArm"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 90);
         //parts["rightArm"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * -90);
-    }
-
-
-
-    void OnGUI()
-    {
-        int totalWidth = 300;
-        int xOffset = Screen.width / 2 - totalWidth / 2;
-        //Jump
-        GUI.color = Color.blue;
-        GUI.Box(new Rect(0 + xOffset, Screen.height - 200, 300, 100), "This is a title", style);
-        //Left
-        GUI.color = Color.red;
-        GUI.Box(new Rect(0 + xOffset, Screen.height - 200, 100, 200), "This is a title", style);
-        GUI.color = Color.green;
-        GUI.Box(new Rect(200 + xOffset, Screen.height - 200, 100, 200), "This is a title", style);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
