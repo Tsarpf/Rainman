@@ -45,6 +45,21 @@ public class MoveController : MonoBehaviour {
         goLeft = false;
         goRight = false;
 
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            goLeft = true;
+        }
+
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            goRight = true;
+        }
+
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            jump = true;
+        }
+
         if (!Input.GetMouseButton(0))
             return;
 
@@ -73,6 +88,8 @@ public class MoveController : MonoBehaviour {
         {
             goRight = true;
         }
+
+
     }
     void OnGUI()
     {
@@ -92,23 +109,27 @@ public class MoveController : MonoBehaviour {
     bool isOnGround = false;
     //int playerSpeed = 10;
 
-    void Update()
-    {
-        getInput();
-    }
     Vector2 playerSpeed = new Vector2(10, 10);
-	void FixedUpdate () {
+    const float jumpSpeed = 10;
+    float currentJumpSpeed = -10;
+	void Update () {
+        getInput();
 
-        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
-        gameObject.rigidbody2D.velocity = new Vector3(0, gameObject.rigidbody2D.velocity.y, 0);
-
-        //float deltaTime = Time.deltaTime;
-
+        if (transform.position.y < 2.50f)
+        {
+            transform.position = new Vector3(transform.position.x, 2.5f);
+            isOnGround = true;
+            currentJumpSpeed = 0;
+        }
         if (jump && isOnGround)
         {
-            gameObject.rigidbody2D.velocity = new Vector2(gameObject.rigidbody2D.velocity.x, playerSpeed.y);
+            isOnGround = false;
+            currentJumpSpeed = jumpSpeed;
         }
 
+        Debug.Log(isOnGround + " " +  currentJumpSpeed);
+        transform.position = new Vector2(transform.position.x, transform.position.y + currentJumpSpeed * Time.deltaTime);
+        currentJumpSpeed -= (10.0f * Time.deltaTime);
 
         if (goLeft)
         {
@@ -131,20 +152,10 @@ public class MoveController : MonoBehaviour {
             {
                 walkTotalProgress += walkStep * 2;
             }
-
             animateLegs();
             animateHands();
-
-            //gameObject.rigidbody2D.velocity = new Vector2(0, gameObject.rigidbody2D.velocity.y);
         }
-
-        //jump = false;
-        //goLeft = false;
-        //goRight = false;
-
-
-
-        //transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+        transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
 	}
     static float walkTotalProgress = 0f;
     const float walkStep = 0.1f;
@@ -180,7 +191,7 @@ public class MoveController : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        isOnGround = true;
+        //isOnGround = true;
     }
 
     void OnTriggerEnter2D(Collider2D collider)
@@ -193,12 +204,12 @@ public class MoveController : MonoBehaviour {
 
     void OnCollisionExit2D()
     {
-        Debug.Log("spam");
-        isOnGround = false;
+        //Debug.Log("spam");
+        //isOnGround = false;
     }
 
     void OnCollisionStay2D()
     {
-        //Debug.Log("stay");
+        Debug.Log("stay");
     }
 }
