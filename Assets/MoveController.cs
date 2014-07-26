@@ -106,7 +106,7 @@ public class MoveController : MonoBehaviour {
 
         if (jump && isOnGround)
         {
-            //gameObject.rigidbody2D.velocity = new Vector2(gameObject.rigidbody2D.velocity.x, playerSpeed.y);
+            gameObject.rigidbody2D.velocity = new Vector2(gameObject.rigidbody2D.velocity.x, playerSpeed.y);
         }
 
 
@@ -125,11 +125,11 @@ public class MoveController : MonoBehaviour {
             float dist = Mathf.Abs((walkTotalProgress % Mathf.PI) - Mathf.PI / 2.0f);
             if((dist + walkStep) < Mathf.PI / 2.0f)
             {
-                walkTotalProgress -= walkStep;
+                walkTotalProgress -= walkStep * 2;
             }
             else if((dist - walkStep) > Mathf.PI / 2.0f)
             {
-                walkTotalProgress += walkStep;
+                walkTotalProgress += walkStep * 2;
             }
 
             animateLegs();
@@ -165,8 +165,8 @@ public class MoveController : MonoBehaviour {
     }
     void animateLegs()
     {
-        parts["leftLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 45);
-        parts["rightLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * -45);
+        parts["leftLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress * 1) * 45);
+        parts["rightLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress * 1) * -45);
         //parts["leftLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * 90);
         //parts["rightLeg"].transform.localEulerAngles = new Vector3(0, 0, Mathf.Sin(walkTotalProgress) * -90);
     }
