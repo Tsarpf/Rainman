@@ -112,8 +112,13 @@ public class MoveController : MonoBehaviour {
     Vector2 playerSpeed = new Vector2(10, 10);
     const float jumpSpeed = 10;
     float currentJumpSpeed = -10;
+
+    float lastProgress = 0;
+    float lastSinProgress = 0;
 	void Update () {
         getInput();
+
+        //Debug.Log(Mathf.Sin(walkTotalProgress) + "      " + walkTotalProgress);
 
         if (transform.position.y < 2.50f)
         {
@@ -127,7 +132,6 @@ public class MoveController : MonoBehaviour {
             currentJumpSpeed = jumpSpeed;
         }
 
-        Debug.Log(isOnGround + " " +  currentJumpSpeed);
         transform.position = new Vector2(transform.position.x, transform.position.y + currentJumpSpeed * Time.deltaTime);
         currentJumpSpeed -= (10.0f * Time.deltaTime);
 
@@ -143,14 +147,26 @@ public class MoveController : MonoBehaviour {
         }
         else
         {
-            float dist = Mathf.Abs((walkTotalProgress % Mathf.PI) - Mathf.PI / 2.0f);
-            if((dist + walkStep) < Mathf.PI / 2.0f)
+            float sind = Mathf.Sin(walkTotalProgress);
+            float mod = walkTotalProgress % Mathf.PI;
+            float distance = Mathf.Abs(mod);
+            if (distance > walkStep * 2)
             {
-                walkTotalProgress -= walkStep * 2;
-            }
-            else if((dist - walkStep) > Mathf.PI / 2.0f)
-            {
-                walkTotalProgress += walkStep * 2;
+                if (distance > Mathf.PI / 2)
+                {
+                    if (mod >= 0)
+                        walkTotalProgress += walkStep * 2;
+                    else
+                        walkTotalProgress -= walkStep * 2;
+                }
+                else if (distance <= Mathf.PI / 2)
+                {
+                    if (mod >= 0)
+                        walkTotalProgress -= walkStep * 2;
+                    else
+                        walkTotalProgress += walkStep * 2;
+
+                }
             }
             animateLegs();
             animateHands();
