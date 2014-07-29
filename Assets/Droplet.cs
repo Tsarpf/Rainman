@@ -24,6 +24,11 @@ public class Droplet : MonoBehaviour {
             steps += 0.01F;
         }
         gameObject.transform.localScale = new Vector3(steps, steps, 1);
+
+        if (transform.position.y < 0)
+        {
+            Destroy(gameObject);
+        }
 	}
 
     void OnTriggerEnter2D(Collider2D other)
