@@ -8,21 +8,21 @@ public class WorldScript : MonoBehaviour {
     Object droplet;
     System.Random random = new System.Random();
 
-    public float leftPos;
-    public float rightPos;
-    public int scale;
     GameObject umbrella;
     Object umbrellaPrefab;
+
+    GameObject player;
+
+    float rainSize, rainLeftPos;
 
 
 	void Start () {
         dropletsPerSecond = 15;
-		//dropletsPerSecond = 1;
+        //dropletsPerSecond = 1;
         droplet = Resources.Load("DropletPrefab");
         //umbrellaPrefab = Resources.Load("umbrella");
-
-        leftPos = scale / 2;
-        rightPos = scale / 2;
+        player = GameObject.Find("Player");
+        rainSize = 100;
 	}
 
     float dropletsFraction = 0;
@@ -41,15 +41,17 @@ public class WorldScript : MonoBehaviour {
             dropletsFraction -= droplets;
         }
 
+
+        rainLeftPos = player.transform.position.x - rainSize / 2;
+
         for (int i = 0; i < droplets; i++)
         {
-            GameObject newthingy = Instantiate(droplet, new Vector3(0, 20, 0), new Quaternion()) as GameObject;
             int rnd = random.Next();
             float withDecimals = rnd / 100.0f;
-            float max = scale;
-            float clamped = withDecimals % max;
+            float clamped = withDecimals % rainSize;
 
-            newthingy.transform.position = new Vector2(clamped - leftPos, 22);
+            //newthingy.transform.position = new Vector2(clamped - rainLeftPos, 22);
+            GameObject newthingy = Instantiate(droplet, new Vector2(clamped + rainLeftPos, 22), new Quaternion()) as GameObject;
         }
         //int r = random.Next(100);
 
