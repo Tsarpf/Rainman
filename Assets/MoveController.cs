@@ -9,8 +9,16 @@ public class MoveController : MonoBehaviour {
     static public Dictionary<string, GameObject> parts;
 
     float left, right, top, controlCount, individualControlWidth, individualControlHeight;
+
+    GameObject[] backgrounds;
     void Start()
     {
+		backgrounds = new GameObject[]
+		{
+            GameObject.Find("Floor1"),
+            GameObject.Find("Floor2"),
+            GameObject.Find("Floor3")
+        };
         parts = new Dictionary<string, GameObject>();
 	    foreach(Transform part in transform)
         {
@@ -33,6 +41,8 @@ public class MoveController : MonoBehaviour {
     	controlCount = 3;
     	individualControlWidth = (right - left) / controlCount;
     	individualControlHeight = Screen.height / 10;
+
+		backgroundScale = GameObject.Find("Floor2").transform.localScale.x;
 	}
 
 
@@ -91,6 +101,44 @@ public class MoveController : MonoBehaviour {
 
 
     }
+
+	int playerOldPos = 0;
+	float backgroundScale;
+    void endlessBackground()
+	{
+        int playerCurrentPos = (int)(transform.position.x / backgroundScale);
+
+		if (transform.position.x < 0) //A bit ugly hack so hanging around 0 works too... :D
+			playerCurrentPos--;
+
+		Debug.Log(playerCurrentPos + " " + playerOldPos);
+		if (playerOldPos == playerCurrentPos)
+			return;
+
+
+        if(playerCurrentPos > playerOldPos)
+		{
+            //plus
+			GameObject temp = backgrounds[2];
+			backgrounds[2] = backgrounds[0];
+			backgrounds[0] = backgrounds[1];
+			backgrounds[1] = temp;
+
+			backgrounds[2].transform.position = new Vector2(backgrounds[2].transform.position.x + backgroundScale * 3, backgrounds[2].transform.position.y);
+		}
+        else
+		{
+            //minus
+			GameObject temp = backgrounds[0];
+			backgrounds[0] = backgrounds[2];
+			backgrounds[2] = backgrounds[1];
+			backgrounds[1] = temp;
+
+			backgrounds[0].transform.position = new Vector2(backgrounds[0].transform.position.x - backgroundScale * 3, backgrounds[0].transform.position.y);
+		}
+
+		playerOldPos = playerCurrentPos;
+	}
     void OnGUI()
     {
         //Jump
@@ -117,6 +165,7 @@ public class MoveController : MonoBehaviour {
     float lastSinProgress = 0;
 	void Update () {
         getInput();
+		endlessBackground();
 
         //Debug.Log(Mathf.Sin(walkTotalProgress) + "      " + walkTotalProgress);
 
