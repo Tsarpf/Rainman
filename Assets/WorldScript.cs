@@ -16,12 +16,10 @@ public class WorldScript : MonoBehaviour {
 
 
 	void Start () {
-        //dropletsPerSecond = 15;
-        dropletsPerSecond = 1;
+        dropletsPerSecond = 15;
+		//dropletsPerSecond = 1;
         droplet = Resources.Load("DropletPrefab");
         //umbrellaPrefab = Resources.Load("umbrella");
-        GameObject floor = GameObject.Find("Rotated Floor");
-        scale = (int)floor.transform.localScale.x;
 
         leftPos = scale / 2;
         rightPos = scale / 2;
