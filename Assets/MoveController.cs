@@ -207,11 +207,13 @@ public class MoveController : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+		Debug.Log(collision.collider.name);
         //isOnGround = true;
     }
 
     void OnTriggerEnter2D(Collider2D collider)
     {
+		Debug.Log(collider.name);
         if(collider.name == "DropletPrefab(Clone)")
         {
             Destroy(gameObject); 

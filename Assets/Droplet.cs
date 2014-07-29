@@ -36,6 +36,8 @@ public class Droplet : MonoBehaviour {
         if (other.name == "DropletPrefab(Clone)")
             return;
 
+		//if (other.name == "Player")
+		//	Destroy(other.gameObject);
         //if(MoveController.parts.Contains(other.name))
         //{
         //    Destroy(GameObject.Find("Player"));

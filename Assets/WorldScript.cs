@@ -42,6 +42,8 @@ public class WorldScript : MonoBehaviour {
         }
 
 
+		if (player == null)
+			return;
         rainLeftPos = player.transform.position.x - rainSize / 2;
 
         for (int i = 0; i < droplets; i++)
