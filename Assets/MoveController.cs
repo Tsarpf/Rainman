@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿	using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,11 +8,18 @@ public class MoveController : MonoBehaviour {
     GUIStyle style = new GUIStyle();
     static public Dictionary<string, GameObject> parts;
 
+	System.Random random;
+
     float left, right, top, controlCount, individualControlWidth, individualControlHeight;
+
+	Object puddle;
 
     GameObject[] backgrounds;
     void Start()
     {
+		random = new System.Random(System.DateTime.Now.Millisecond);
+
+        puddle = Resources.Load("PuddlePrefab");
 		backgrounds = new GameObject[]
 		{
             GameObject.Find("Floor1"),
@@ -44,7 +51,6 @@ public class MoveController : MonoBehaviour {
 
 		backgroundScale = GameObject.Find("Floor2").transform.localScale.x;
 	}
-
 
     bool goLeft = false;
     bool goRight = false;
@@ -104,17 +110,61 @@ public class MoveController : MonoBehaviour {
 
 	int playerOldPos = 0;
 	float backgroundScale;
-    void endlessBackground()
+	float lowestX=0,highestX=0;
+	int puddleSpawnRatePercent = 25;
+	
+	void newPuddle(Vector3 position, Quaternion rot)
+	{
+	    Instantiate(puddle, position, rot);
+	}
+	void newPuddle(float xPos)
+	{
+		GameObject newPuddle = Instantiate(puddle) as GameObject;
+		newPuddle.transform.position = new Vector3(xPos, newPuddle.transform.position.y, newPuddle.transform.position.z);
+	}
+	void createNewPuddles(int playerCurrentPos)
+	{
+		if(playerCurrentPos > highestX)
+		{
+			if (random.Next(0, 100) > puddleSpawnRatePercent)
+				return;
+
+			float lowerX = playerCurrentPos * backgroundScale + backgroundScale;
+			//float lowerX = playerCurrentPos * backgroundScale;
+			float upperX = lowerX + backgroundScale;
+			float xPos = random.Next((int)lowerX, (int)upperX);
+			Debug.Log("spawning puddle " + xPos);
+			newPuddle(xPos);
+			highestX = playerCurrentPos;
+		}
+		else if(playerCurrentPos < lowestX)
+		{
+			if (random.Next(0, 100) > puddleSpawnRatePercent)
+				return;
+
+			float upperX = playerCurrentPos * backgroundScale;
+			float lowerX = upperX - backgroundScale;
+			float xPos = random.Next((int)lowerX, (int)upperX);
+			Debug.Log("spawning puddle " + xPos);
+			newPuddle(xPos);
+			lowestX = playerCurrentPos;
+		}
+	}
+    void endlessMap()
 	{
         int playerCurrentPos = (int)(transform.position.x / backgroundScale);
+
+		//These have to be before the ugly hack below 
 
 		if (transform.position.x < 0) //A bit ugly hack so hanging around 0 works too... :D
 			playerCurrentPos--;
 
-		Debug.Log(playerCurrentPos + " " + playerOldPos);
 		if (playerOldPos == playerCurrentPos)
 			return;
 
+		createNewPuddles(playerCurrentPos);
+
+		Debug.Log("player current position: " + playerCurrentPos);
 
         if(playerCurrentPos > playerOldPos)
 		{
@@ -165,7 +215,7 @@ public class MoveController : MonoBehaviour {
     float lastSinProgress = 0;
 	void Update () {
         getInput();
-		endlessBackground();
+		endlessMap();
 
         //Debug.Log(Mathf.Sin(walkTotalProgress) + "      " + walkTotalProgress);
 
@@ -265,9 +315,51 @@ public class MoveController : MonoBehaviour {
 		Debug.Log(collider.name);
         if(collider.name == "DropletPrefab(Clone)")
         {
-            Destroy(gameObject); 
+			hitDroplet();
         }
+		if (collider.name == "PuddlePrefab(Clone)")
+		{
+			Debug.Log("hit puddle");
+			hitPuddle();
+		}
     }
+
+	void OnTriggerStay2D(Collider2D collider)
+	{
+		if (collider.name == "PuddlePrefab(Clone)")
+		{
+			Debug.Log("hit puddle");
+			hitPuddle();
+		}
+	}
+	
+	void hitDroplet()
+	{
+		if(Player.umbrellaUses > 0)
+		{
+			Player.umbrellaUses--;
+			return;
+		}	
+		Destroy(gameObject); 
+	}
+
+	float puddleHitGracePeriod = 2;
+	float lastPuddleHit = 0;
+	void hitPuddle()
+	{
+		if(Time.time - lastPuddleHit >= puddleHitGracePeriod)
+		{
+			if(Player.wellieUses == 0)
+			{
+				Destroy(gameObject);
+			}
+			else if(Player.wellieUses > 0)
+			{
+				Player.wellieUses--;
+			}
+			lastPuddleHit = Time.time;
+		}
+	}
 
     void OnCollisionExit2D()
     {

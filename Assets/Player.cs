@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Assets
+public class Player
 {
-    class Player
-    {
-        public static int umbrellaUses;
-
-    }
+	public static int umbrellaUses = 0;
+	public static int wellieUses = 0;
 }
