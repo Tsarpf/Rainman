@@ -6,7 +6,8 @@ TextureImporter:
     21300002: jaba_0
     21300004: jaba_1
     21300006: jaba_2
-    21300008: jaba_3
+    21300008: jaba_4
+    21300010: jaba_3
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -78,15 +79,25 @@ TextureImporter:
       alignment: 9
       pivot: {x: .325879514, y: .840985596}
       border: {x: 0, y: 0, z: 0, w: 0}
+    - name: jaba_4
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 1
+        width: 92
+        height: 167
+      alignment: 9
+      pivot: {x: .347825915, y: .847305596}
+      border: {x: 0, y: 0, z: 0, w: 0}
     - name: jaba_3
       rect:
         serializedVersion: 2
-        x: 139
-        y: 122
+        x: 127
+        y: 180
         width: 47
         height: 53
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

@@ -13,13 +13,22 @@ public class MoveController : MonoBehaviour {
     float left, right, top, controlCount, individualControlWidth, individualControlHeight;
 
 	Object puddle;
+	Object wellies;
+    Object wellyLeg;
+    Object normalLeg;
 
     GameObject[] backgrounds;
     void Start()
     {
 		random = new System.Random(System.DateTime.Now.Millisecond);
 
+        wellyLeg = Resources.Load("jaba_4");
+        normalLeg = Resources.Load("jaba_2");
+
+        //Debug.Log(GameObject.Find("jaba"));
+
         puddle = Resources.Load("PuddlePrefab");
+        puddle = Resources.Load("WelliesPrefab");
 		backgrounds = new GameObject[]
 		{
             GameObject.Find("Floor1"),
@@ -111,7 +120,8 @@ public class MoveController : MonoBehaviour {
 	int playerOldPos = 0;
 	float backgroundScale;
 	float lowestX=0,highestX=0;
-	int puddleSpawnRatePercent = 25;
+	int puddleSpawnRatePercent = 50;
+	int welliesSpawnRatePercent = 25;
 	
 	void newPuddle(Vector3 position, Quaternion rot)
 	{
@@ -119,36 +129,75 @@ public class MoveController : MonoBehaviour {
 	}
 	void newPuddle(float xPos)
 	{
+		Debug.Log("spawning puddle " + xPos);
 		GameObject newPuddle = Instantiate(puddle) as GameObject;
 		newPuddle.transform.position = new Vector3(xPos, newPuddle.transform.position.y, newPuddle.transform.position.z);
 	}
-	void createNewPuddles(int playerCurrentPos)
+	void newWellies(float xPos)
 	{
+		Debug.Log("spawning wellies" + xPos);
+		GameObject newWellies = Instantiate(wellies) as GameObject;
+		newWellies.transform.position = new Vector3(xPos, newWellies.transform.position.y, newWellies.transform.position.z);
+	}
+	void createPuddlesAndDrops(int playerCurrentPos)
+	{
+        bool spawnPuddle, spawnWellies;
+        spawnPuddle = spawnWellies = false;
+
+        if (random.Next(0, 100) < puddleSpawnRatePercent)
+            spawnPuddle = true;
+
+        if (random.Next(0, 100) < welliesSpawnRatePercent)
+            spawnWellies = true;
+
+        float xPos, upperX, lowerX;
+        xPos = upperX = lowerX = 0;
 		if(playerCurrentPos > highestX)
 		{
-			if (random.Next(0, 100) > puddleSpawnRatePercent)
-				return;
 
-			float lowerX = playerCurrentPos * backgroundScale + backgroundScale;
-			//float lowerX = playerCurrentPos * backgroundScale;
-			float upperX = lowerX + backgroundScale;
-			float xPos = random.Next((int)lowerX, (int)upperX);
-			Debug.Log("spawning puddle " + xPos);
-			newPuddle(xPos);
+			lowerX = playerCurrentPos * backgroundScale + backgroundScale;
+			upperX = lowerX + backgroundScale;
 			highestX = playerCurrentPos;
 		}
 		else if(playerCurrentPos < lowestX)
 		{
-			if (random.Next(0, 100) > puddleSpawnRatePercent)
-				return;
-
-			float upperX = playerCurrentPos * backgroundScale;
-			float lowerX = upperX - backgroundScale;
-			float xPos = random.Next((int)lowerX, (int)upperX);
-			Debug.Log("spawning puddle " + xPos);
-			newPuddle(xPos);
+			upperX = playerCurrentPos * backgroundScale;
+			lowerX = upperX - backgroundScale;
 			lowestX = playerCurrentPos;
 		}
+        else
+        {
+            return;
+        }
+        xPos = random.Next((int)lowerX, (int)upperX);
+
+        if (spawnPuddle)
+            newPuddle(xPos); 
+
+
+        float oldX = xPos;
+        xPos = random.Next((int)lowerX, (int)upperX);
+        //If we want to spawn multiple types of things, lets make sure they don't overlap.
+        if(spawnPuddle && spawnWellies)
+        {
+
+            if(Mathf.Abs(oldX - xPos) < 5)
+            {
+                if(xPos > oldX)
+                {
+                    xPos += 5;       
+                }
+                else if(xPos >= oldX)
+                {
+                    xPos -= 5;
+                }
+            }
+            newWellies(xPos);
+        }
+        else if(spawnWellies)
+        {
+            newWellies(xPos);
+        }
 	}
     void endlessMap()
 	{
@@ -162,7 +211,7 @@ public class MoveController : MonoBehaviour {
 		if (playerOldPos == playerCurrentPos)
 			return;
 
-		createNewPuddles(playerCurrentPos);
+		createPuddlesAndDrops(playerCurrentPos);
 
 		Debug.Log("player current position: " + playerCurrentPos);
 
@@ -214,6 +263,7 @@ public class MoveController : MonoBehaviour {
     float lastProgress = 0;
     float lastSinProgress = 0;
 	void Update () {
+        //Debug.Log(parts["leftLeg"].GetComponent<SpriteRenderer>().sprite.ToString());
         getInput();
 		endlessMap();
 
@@ -322,6 +372,11 @@ public class MoveController : MonoBehaviour {
 			Debug.Log("hit puddle");
 			hitPuddle();
 		}
+		if (collider.name == "WelliesPrefab(Clone)")
+		{
+			Debug.Log("hit wellies");
+			hitWellies();
+		}
     }
 
 	void OnTriggerStay2D(Collider2D collider)
@@ -330,6 +385,11 @@ public class MoveController : MonoBehaviour {
 		{
 			Debug.Log("hit puddle");
 			hitPuddle();
+		}
+		if (collider.name == "WelliesPrefab(Clone)")
+		{
+			Debug.Log("hit wellies");
+			hitWellies();
 		}
 	}
 	
@@ -343,6 +403,32 @@ public class MoveController : MonoBehaviour {
 		Destroy(gameObject); 
 	}
 
+    void hitWellies()
+    {
+        Player.wellieUses++;
+        if(!welliesOn)
+        {
+            welliesOn = true;
+            switchBoots();
+        }
+    }
+
+    bool welliesOn = false;
+    void switchBoots()
+    {
+        Sprite sprite;
+        if(welliesOn)
+        {
+            sprite = (Sprite)Sprite.Instantiate(wellyLeg);
+        }
+        else
+        {
+            sprite = (Sprite)Sprite.Instantiate(normalLeg);
+        }
+
+        parts["leftLeg"].GetComponent<SpriteRenderer>().sprite = sprite;
+        parts["rightLeg"].GetComponent<SpriteRenderer>().sprite = sprite;
+    }
 	float puddleHitGracePeriod = 2;
 	float lastPuddleHit = 0;
 	void hitPuddle()
@@ -356,6 +442,11 @@ public class MoveController : MonoBehaviour {
 			else if(Player.wellieUses > 0)
 			{
 				Player.wellieUses--;
+                if(Player.wellieUses == 0)
+                {
+                    welliesOn = false;
+                    switchBoots();
+                }
 			}
 			lastPuddleHit = Time.time;
 		}

@@ -17,7 +17,9 @@ public class WorldScript : MonoBehaviour {
 
 
 	void Start () {
-        dropletsPerSecond = 15;
+		//dropletsPerSecond = 30;
+        dropletsPerSecond = 40;
+		//dropletsPerSecond = 15;
         //dropletsPerSecond = 1;
         droplet = Resources.Load("DropletPrefab");
         //umbrellaPrefab = Resources.Load("umbrella");
