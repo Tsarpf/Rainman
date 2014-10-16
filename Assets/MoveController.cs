@@ -1,5 +1,7 @@
-﻿	using UnityEngine;
+﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 
 public class MoveController : MonoBehaviour {
@@ -14,20 +16,41 @@ public class MoveController : MonoBehaviour {
 
 	Object puddle;
 	Object wellies;
-    Object wellyLeg;
-    Object normalLeg;
+    Sprite wellyLeg;
+    Sprite normalLeg;
+    public Texture2D jaba;
 
     GameObject[] backgrounds;
     void Start()
     {
 		random = new System.Random(System.DateTime.Now.Millisecond);
 
-        wellyLeg = Resources.Load("jaba_4");
-        normalLeg = Resources.Load("jaba_2");
+        //wellyLeg = Resources.Load("jaba_4");
+        //normalLeg = Resources.Load("jaba_2");
 
-        //Debug.Log(GameObject.Find("jaba"));
+        string spriteSheet = AssetDatabase.GetAssetPath(jaba);
+        Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(spriteSheet)
+            .OfType<Sprite>().ToArray();
 
-        puddle = Resources.Load("PuddlePrefab");
+        //Debug.Log(sprites[0]);
+        //Debug.Log(sprites);
+        Debug.Log(sprites.Length);
+        for (int i = 0; i < sprites.Length; i++)
+        {
+            if (sprites[i].name == "jaba_2")
+            {
+                normalLeg = sprites[i];
+                Debug.Log(sprites[i]);
+            }
+            else if (sprites[i].name == "jaba_4")
+            {
+                wellyLeg = sprites[i];
+                Debug.Log(sprites[i]);
+            }
+        }
+            //Debug.Log(GameObject.Find("jaba"));
+
+            puddle = Resources.Load("PuddlePrefab");
         puddle = Resources.Load("WelliesPrefab");
 		backgrounds = new GameObject[]
 		{
@@ -154,7 +177,6 @@ public class MoveController : MonoBehaviour {
         xPos = upperX = lowerX = 0;
 		if(playerCurrentPos > highestX)
 		{
-
 			lowerX = playerCurrentPos * backgroundScale + backgroundScale;
 			upperX = lowerX + backgroundScale;
 			highestX = playerCurrentPos;
@@ -389,6 +411,7 @@ public class MoveController : MonoBehaviour {
 		if (collider.name == "WelliesPrefab(Clone)")
 		{
 			Debug.Log("hit wellies");
+            Destroy(collider.gameObject);
 			hitWellies();
 		}
 	}
@@ -419,11 +442,13 @@ public class MoveController : MonoBehaviour {
         Sprite sprite;
         if(welliesOn)
         {
-            sprite = (Sprite)Sprite.Instantiate(wellyLeg);
+            sprite = wellyLeg;
+            //sprite = (Sprite)Sprite.Instantiate(wellyLeg);
         }
         else
         {
-            sprite = (Sprite)Sprite.Instantiate(normalLeg);
+            sprite = normalLeg;
+            //sprite = (Sprite)Sprite.Instantiate(normalLeg);
         }
 
         parts["leftLeg"].GetComponent<SpriteRenderer>().sprite = sprite;
