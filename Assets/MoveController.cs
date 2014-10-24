@@ -34,7 +34,7 @@ public class MoveController : MonoBehaviour {
 
         //Debug.Log(sprites[0]);
         //Debug.Log(sprites);
-        Debug.Log(sprites.Length);
+        //Debug.Log(sprites.Length);
         for (int i = 0; i < sprites.Length; i++)
         {
             if (sprites[i].name == "jaba_2")
@@ -50,8 +50,8 @@ public class MoveController : MonoBehaviour {
         }
             //Debug.Log(GameObject.Find("jaba"));
 
-            puddle = Resources.Load("PuddlePrefab");
-        puddle = Resources.Load("WelliesPrefab");
+        puddle = Resources.Load("PuddlePrefab");
+        wellies = Resources.Load("WelliesPrefab");
 		backgrounds = new GameObject[]
 		{
             GameObject.Find("Floor1"),
@@ -158,7 +158,7 @@ public class MoveController : MonoBehaviour {
 	}
 	void newWellies(float xPos)
 	{
-		Debug.Log("spawning wellies" + xPos);
+		Debug.Log("spawning wellies " + xPos);
 		GameObject newWellies = Instantiate(wellies) as GameObject;
 		newWellies.transform.position = new Vector3(xPos, newWellies.transform.position.y, newWellies.transform.position.z);
 	}
@@ -391,21 +391,6 @@ public class MoveController : MonoBehaviour {
         }
 		if (collider.name == "PuddlePrefab(Clone)")
 		{
-			Debug.Log("hit puddle");
-			hitPuddle();
-		}
-		if (collider.name == "WelliesPrefab(Clone)")
-		{
-			Debug.Log("hit wellies");
-			hitWellies();
-		}
-    }
-
-	void OnTriggerStay2D(Collider2D collider)
-	{
-		if (collider.name == "PuddlePrefab(Clone)")
-		{
-			Debug.Log("hit puddle");
 			hitPuddle();
 		}
 		if (collider.name == "WelliesPrefab(Clone)")
@@ -414,6 +399,19 @@ public class MoveController : MonoBehaviour {
             Destroy(collider.gameObject);
 			hitWellies();
 		}
+    }
+
+	void OnTriggerStay2D(Collider2D collider)
+	{
+		if (collider.name == "PuddlePrefab(Clone)")
+		{
+			hitPuddle();
+		}
+        //if (collider.name == "WelliesPrefab(Clone)")
+        //{
+        //    Debug.Log("hit wellies");
+        //    hitWellies();
+        //}
 	}
 	
 	void hitDroplet()
@@ -455,11 +453,14 @@ public class MoveController : MonoBehaviour {
         parts["rightLeg"].GetComponent<SpriteRenderer>().sprite = sprite;
     }
 	float puddleHitGracePeriod = 2;
-	float lastPuddleHit = 0;
+	float lastPuddleHit = -100;
 	void hitPuddle()
 	{
+        float time = (Time.time - lastPuddleHit);
 		if(Time.time - lastPuddleHit >= puddleHitGracePeriod)
 		{
+            Debug.Log("Puddle hit 'success': " + time);
+            Debug.Log("Wellie uses: " + Player.wellieUses);
 			if(Player.wellieUses == 0)
 			{
 				Destroy(gameObject);
